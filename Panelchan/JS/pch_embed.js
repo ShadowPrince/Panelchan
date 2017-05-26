@@ -20,7 +20,7 @@ var __pch = {
     },
 
     click_selector: function (sel) {
-        if (Zepto(sel).length == 1) {
+        if (Zepto(sel).length > 0) {
             Zepto(sel).click()
 
             return this._prepare_result([])

@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Dispatch
 
 class ImageProxyCache: URLCache {
     static let sharedProxy = ImageProxyCache()
@@ -22,13 +23,13 @@ class ImageProxyCache: URLCache {
         if let data = self.cachedImageData(for: url) {
             callback(data)
         } else {
-            self.queue.addOperation {
+            DispatchQueue.global(qos: .userInitiated).async {
                 let end = CFAbsoluteTimeGetCurrent() + 10.0
+                var result: Data?
+
                 while true {
                     if let data = self.cachedImageData(for: url) {
-                        OperationQueue.main.addOperation {
-                            callback(data)
-                        }
+                        result = data
                         break
                     }
 
@@ -38,6 +39,10 @@ class ImageProxyCache: URLCache {
                         print("Slept in cache")
                         Thread.sleep(forTimeInterval: 0.3)
                     }
+                }
+
+                DispatchQueue.main.sync {
+                    callback(result)
                 }
             }
         }

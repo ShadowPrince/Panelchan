@@ -10,16 +10,19 @@ import Foundation
 import UIKit
 
 class SaveGuideViewController: UIViewController, UIWebViewDelegate, UIGestureRecognizerDelegate {
-    enum Stage: Int {
+    enum Stage {
         case initial
         case nextSelector
         case previousSelector
-        case finished
+        case finished(controller: ChanController)
     }
-    
+
+    enum Segues: String {
+        case infoPanel = "infoPanel"
+    }
+
     @IBOutlet weak var urlField: UITextField!
     @IBOutlet weak var webView: UIWebView!
-    @IBOutlet weak var helpView: UITextView!
 
     private var _stage = Stage.initial
     var stage: Stage {
@@ -32,6 +35,9 @@ class SaveGuideViewController: UIViewController, UIWebViewDelegate, UIGestureRec
             self._stage = newValue
         }
     }
+
+    var infoPanelController: SaveGuideInfoPanelViewController!
+    
     var chanController: ChanController?
     var nextSelector: ChanController.Selector?
     var prevSelector: ChanController.Selector?
@@ -40,25 +46,11 @@ class SaveGuideViewController: UIViewController, UIWebViewDelegate, UIGestureRec
         super.viewDidLoad()
 
         self.webView.addDelegate(self)
-        self.stage = .nextSelector
     }
 
     // MARK: stages
     func enteredStage(_ stage: Stage) {
-        switch stage {
-        case .initial:
-            break
-        case .nextSelector:
-            self.helpView.text = "Hold on next selector"
-        case .previousSelector:
-            self.helpView.text = "Hold on previous selector"
-        case .finished:
-            self.chanController = ChanController(webView: self.webView,
-                                                 url: self.webView.request!.url!,
-                                                 previous: self.prevSelector!,
-                                                 next: self.nextSelector!)
-            self.helpView.text = "Url: \(self.chanController?.url)"
-        }
+        self.infoPanelController.enteredStage(stage)
     }
 
     func holdNextSelectorStage(_ point: CGPoint) throws {
@@ -75,44 +67,50 @@ class SaveGuideViewController: UIViewController, UIWebViewDelegate, UIGestureRec
         if (sender.state == .began) {
             let rawPoint = sender.location(ofTouch: 0, in: self.webView)
             let f = self.view.window!.frame.size.width / self.webView.frame.size.width
-            let point = CGPoint(x: rawPoint.x * f, y: (rawPoint.y - 20.0) * f)
+            let point = CGPoint(x: rawPoint.x * f, y: (rawPoint.y) * f)
             // TODO: FIXME
 
             do {
                 switch (self.stage) {
                 case .nextSelector:
                     try self.holdNextSelectorStage(point)
+
+                    self.stage = .previousSelector
                 case .previousSelector:
                     try self.holdPreviousSelectorStage(point)
+
+                    self.stage = .finished(controller: ChanController(
+                        webView: self.webView,
+                        url: self.webView.request!.url!,
+                        previous: self.prevSelector!,
+                        next: self.nextSelector!))
                 default:
                     break
                 }
-
-                if let newStage = Stage.init(rawValue: self.stage.rawValue + 1) {
-                    self.stage = newStage
-                    self.enteredStage(self.stage)
-                }
             } catch (let e) {
                 print(e)
-                // TODO: show alert
             }
         }
     }
 
-    // MARK: debug
-    @IBOutlet weak var debugImgView: UIImageView!
-
-    @IBAction func debugPrevAction(_ sender: Any) {
-        try! self.chanController?.requestPrev()
-    }
-
-    @IBAction func debugNextAction(_ sender: Any) {
-        try! self.chanController?.requestNext()
-    }
-
     // MARK: delegation & simple actions
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == Segues.infoPanel.rawValue {
+            self.infoPanelController = segue.destination as! SaveGuideInfoPanelViewController
+            self.infoPanelController.webView = self.webView
+            self.infoPanelController.chanController = self.chanController
+        }
+
+        super.prepare(for: segue, sender: sender)
+    }
+    
     @IBAction func goAction(_ sender: Any) {
         self.webView.loadRequest(string: self.urlField.text!)
+        self.stage = .nextSelector
+    }
+    
+    @IBAction func backAction(_ sender: Any) {
+        self.webView.goBack()
     }
     
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
