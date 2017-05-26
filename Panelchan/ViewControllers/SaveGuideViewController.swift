@@ -39,6 +39,7 @@ class SaveGuideViewController: UIViewController, UIWebViewDelegate, UIGestureRec
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        self.webView.addDelegate(self)
         self.stage = .nextSelector
     }
 
@@ -52,7 +53,8 @@ class SaveGuideViewController: UIViewController, UIWebViewDelegate, UIGestureRec
         case .previousSelector:
             self.helpView.text = "Hold on previous selector"
         case .finished:
-            self.chanController = ChanController(url: self.webView.request!.url!,
+            self.chanController = ChanController(webView: self.webView,
+                                                 url: self.webView.request!.url!,
                                                  previous: self.prevSelector!,
                                                  next: self.nextSelector!)
             self.helpView.text = "Url: \(self.chanController?.url)"
@@ -95,6 +97,17 @@ class SaveGuideViewController: UIViewController, UIWebViewDelegate, UIGestureRec
                 // TODO: show alert
             }
         }
+    }
+
+    // MARK: debug
+    @IBOutlet weak var debugImgView: UIImageView!
+
+    @IBAction func debugPrevAction(_ sender: Any) {
+        try! self.chanController?.requestPrev()
+    }
+
+    @IBAction func debugNextAction(_ sender: Any) {
+        try! self.chanController?.requestNext()
     }
 
     // MARK: delegation & simple actions

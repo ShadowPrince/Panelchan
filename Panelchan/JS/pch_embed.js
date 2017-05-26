@@ -1,3 +1,14 @@
+var observeDOM = (function(){
+    var MutationObserver = window.MutationObserver || window.WebKitMutationObserver,
+    eventListenerSupported = window.addEventListener;
+
+    return function(obj, callback){
+        var obs = new MutationObserver(function(mutations, observer){
+            callback();
+        });
+        obs.observe( obj, { childList:true, subtree:true, attributes: true, characterData: true });
+    };
+})();
 
 var __pch = {
     _prepare_result: function (res) {
@@ -9,7 +20,13 @@ var __pch = {
     },
 
     click_selector: function (sel) {
-        Zepto(sel).click()
+        if (Zepto(sel).length == 1) {
+            Zepto(sel).click()
+
+            return this._prepare_result([])
+        } else {
+            return this._prepare_result(null)
+        }
     },
 
     images_bigger_than: function (px) {
@@ -20,7 +37,7 @@ var __pch = {
             let image = images[key]
 
             if (image.clientWidth > px || image.clientHeight > px) {
-                result.push(image)
+                result.push(image.src)
             }
         }
 
@@ -37,3 +54,15 @@ var __pch = {
         })
     },
 }
+
+Zepto(document).on('ready', function () {
+    setTimeout(function () {
+        window.open("pch://ready")
+    }, 1000)
+
+    observeDOM(document.getElementsByTagName("body")[0], function () {
+        setTimeout(function () {
+            window.open("pch://mutated")
+        }, 1000)
+    })
+})

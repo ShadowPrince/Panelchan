@@ -7,10 +7,10 @@
 //
 
 import Foundation
+import ObjectiveC
+
 import UIKit
 import WebKit
-
-typealias PCHElement = Dictionary<String, String>
 
 extension UIWebView {
     func embedJavascript(_ name: String) {
@@ -22,28 +22,47 @@ extension UIWebView {
     }
 }
 
-extension UIWebView {
-    func pch_inject() {
-        if (self.stringByEvaluatingJavaScript(from: "__pch.is_injected()") != "1") {
-            self.embedJavascript("zepto")
-            self.embedJavascript("pch_embed")
+var UIWebViewDelegatesHandle: UInt8 = 0
+extension UIWebView: UIWebViewDelegate {
+    var delegates: [UIWebViewDelegate] {
+        get {
+            return objc_getAssociatedObject(self, &UIWebViewDelegatesHandle) as! [UIWebViewDelegate]
+        }
+
+        set {
+            objc_setAssociatedObject(self, &UIWebViewDelegatesHandle, newValue, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
     }
+
+    public func addDelegate(_ delegate: UIWebViewDelegate) {
+        if self.delegate !== self {
+            self.delegates = []
+            self.delegate = self
+        }
+
+        self.delegates.append(delegate)
+    }
     
-    func pch_parse(_ string: String) -> Any? {
-        return try? JSONSerialization.jsonObject(with: string.data(using: .utf8)!, options: [])
+    public func webViewDidFinishLoad(_ webView: UIWebView) {
+        for delegate in self.delegates {
+            delegate.webViewDidFinishLoad?(webView)
+        }
     }
 
-    func pch_eval(method: String, arguments list: String) -> Any? {
-        return self.pch_parse(self.stringByEvaluatingJavaScript(from: "__pch.\(method)(\(list))") ?? "")
+    public func webViewDidStartLoad(_ webView: UIWebView) {
+        for delegate in self.delegates {
+            delegate.webViewDidStartLoad?(webView)
+        }
     }
-    
-    
-    func pch_element(at p: CGPoint) -> PCHElement? {
-        return self.pch_eval(method: "element_at", arguments: "\(p.x), \(p.y)") as! PCHElement?
-    }
-    
-    func pch_click(selector: String) {
-        let _ = self.pch_eval(method: "click_selector", arguments: "\"\(selector)\"")
+
+    public func webView(_ webView: UIWebView, shouldStartLoadWith request: URLRequest, navigationType: UIWebViewNavigationType) -> Bool {
+        for delegate in self.delegates {
+            if (delegate.webView?(webView, shouldStartLoadWith: request, navigationType: navigationType) == false) {
+                return false
+            }
+        }
+
+        return true
     }
 }
+
