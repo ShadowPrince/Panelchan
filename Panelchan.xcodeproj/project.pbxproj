@@ -18,6 +18,7 @@
 		F36644B51ED849FB002806A0 /* PanelchanWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F36644B41ED849FB002806A0 /* PanelchanWebView.swift */; };
 		F3A1BB811ED88D6C00135477 /* SaveGuideInfoPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3A1BB801ED88D6C00135477 /* SaveGuideInfoPanel.swift */; };
 		F3A1BB831ED8AF9300135477 /* SaveGuideCustomSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3A1BB821ED8AF9300135477 /* SaveGuideCustomSelector.swift */; };
+		F3A1BB851ED8CE4400135477 /* ILTranslucentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3A1BB841ED8CE4400135477 /* ILTranslucentView.swift */; };
 		F3E117911EC112A8004D4593 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3E117901EC112A8004D4593 /* AppDelegate.swift */; };
 		F3E117961EC112A8004D4593 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F3E117941EC112A8004D4593 /* Main.storyboard */; };
 		F3E117981EC112A8004D4593 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F3E117971EC112A8004D4593 /* Assets.xcassets */; };
@@ -37,6 +38,7 @@
 		F36644B71ED8596D002806A0 /* Panelchan-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Panelchan-Bridging-Header.h"; sourceTree = "<group>"; };
 		F3A1BB801ED88D6C00135477 /* SaveGuideInfoPanel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SaveGuideInfoPanel.swift; path = ViewControllers/SaveGuideInfoPanel.swift; sourceTree = "<group>"; };
 		F3A1BB821ED8AF9300135477 /* SaveGuideCustomSelector.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SaveGuideCustomSelector.swift; path = ViewControllers/SaveGuideCustomSelector.swift; sourceTree = "<group>"; };
+		F3A1BB841ED8CE4400135477 /* ILTranslucentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ILTranslucentView.swift; path = Views/ILTranslucentView.swift; sourceTree = "<group>"; };
 		F3E1178D1EC112A8004D4593 /* Panelchan.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Panelchan.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F3E117901EC112A8004D4593 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		F3E117951EC112A8004D4593 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -113,6 +115,14 @@
 			name = Cache;
 			sourceTree = "<group>";
 		};
+		F3A1BB861ED8D01000135477 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				F3A1BB841ED8CE4400135477 /* ILTranslucentView.swift */,
+			);
+			name = Views;
+			sourceTree = "<group>";
+		};
 		F3E117841EC112A8004D4593 = {
 			isa = PBXGroup;
 			children = (
@@ -138,6 +148,7 @@
 				F325EE631ED437250027E1BD /* ViewControllers */,
 				F3E117901EC112A8004D4593 /* AppDelegate.swift */,
 				F3E117941EC112A8004D4593 /* Main.storyboard */,
+				F3A1BB861ED8D01000135477 /* Views */,
 				F3465D131EC22B770005D072 /* JS */,
 				F325EE641ED437470027E1BD /* Misc */,
 			);
@@ -223,6 +234,7 @@
 				F325EE681ED43CE90027E1BD /* SaveGuideViewController.swift in Sources */,
 				F325EE661ED437660027E1BD /* SavedViewController.swift in Sources */,
 				F3A1BB831ED8AF9300135477 /* SaveGuideCustomSelector.swift in Sources */,
+				F3A1BB851ED8CE4400135477 /* ILTranslucentView.swift in Sources */,
 				F3465D191EC22C080005D072 /* WebView.swift in Sources */,
 				F3E117911EC112A8004D4593 /* AppDelegate.swift in Sources */,
 				F325EE6C1ED5D29C0027E1BD /* ChanController.swift in Sources */,

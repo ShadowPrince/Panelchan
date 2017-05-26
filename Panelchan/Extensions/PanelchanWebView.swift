@@ -17,17 +17,6 @@ typealias EmbedImage = String
 
 var PCHWebViewDelegateHandle: UInt8 = 1
 extension UIWebView {
-    /*
-    var pch_events: EmbedWebViewDelegate? {
-        return objc_getAssociatedObject(self, &PCHWebViewDelegateHandle) as! EmbedWebViewDelegate?
-    }
-
-    func pch_init() {
-        objc_setAssociatedObject(self, &PCHWebViewDelegateHandle, EmbedWebViewDelegate(), objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC)
-        self.addDelegate(self.pch_events!)
-    }
- */
-
     func pch_inject() {
         if (self.stringByEvaluatingJavaScript(from: "__pch.is_injected()") != "1") {
             self.embedJavascript("zepto")
@@ -42,7 +31,12 @@ extension UIWebView {
     func pch_eval(method: String, arguments list: String) -> Any? {
         return self.pch_parse(self.stringByEvaluatingJavaScript(from: "__pch.\(method)(\(list))") ?? "")
     }
-    
+}
+
+extension UIWebView {
+    func pch_count(selector: String) -> Int {
+        return (self.pch_eval(method: "count_sel", arguments: "\"\(selector)\"") as! [Int]).first!
+    }
     
     func pch_element(at p: CGPoint) -> EmbedElement? {
         return self.pch_eval(method: "element_at", arguments: "\(p.x), \(p.y)") as! EmbedElement?
@@ -55,37 +49,8 @@ extension UIWebView {
     func pch_images(bigger px: Int) -> [EmbedImage] {
         return self.pch_eval(method: "images_bigger_than", arguments: "\(px)") as! [EmbedImage]
     }
-}
 
-/*
-enum EmbedEvent: String {
-    case mutated = "mutated"
-    case ready = "ready"
-}
-
-protocol EmbedDelegate {
-    func fired(event: EmbedEvent)
-}
-
-class EmbedWebViewDelegate: NSObject, UIWebViewDelegate {
-    var delegate: EmbedDelegate?
-
-    func webView(_ webView: UIWebView, shouldStartLoadWith request: URLRequest, navigationType: UIWebViewNavigationType) -> Bool {
-        guard let url = request.url?.absoluteString else {
-            return true
-        }
-
-        if url.hasPrefix("pch://") == true {
-            if let event = EmbedEvent(rawValue: url.substring(from: url.index(url.startIndex, offsetBy: 6))) {
-                self.delegate?.fired(event: event)
-            } else {
-                assertionFailure("Unknown event: \(url)")
-            }
-
-            return false
-        }
-
-        return true
+    func pch_title() -> String {
+        return self.stringByEvaluatingJavaScript(from: "document.title") ?? "Untitled"
     }
 }
-*/

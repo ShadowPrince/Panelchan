@@ -46,11 +46,14 @@ class ChanController: NSObject, NSCoding {
 
     fileprivate var content = [EmbedImage]()
     fileprivate var contentIndex = 0
+
+    var title: String
     var url: URL
     var previousSelector, nextSelector: Selector
 
-    init(webView: UIWebView, url: URL, previous: Selector, next: Selector) {
-        self.url = url
+    init(webView: UIWebView, previous: Selector, next: Selector) {
+        self.title = webView.pch_title()
+        self.url = webView.request!.url!
         self.previousSelector = previous
         self.nextSelector = next
         self.webView = webView
@@ -61,6 +64,8 @@ class ChanController: NSObject, NSCoding {
     }
 
     required init?(coder c: NSCoder) {
+        // hooray type system!
+        self.title = c.decode()
         self.url = c.decode()
         self.content = c.decode()
         self.contentIndex = c.decode()
@@ -71,6 +76,7 @@ class ChanController: NSObject, NSCoding {
     }
 
     func encode(with c: NSCoder) {
+        c.encode(self.title)
         c.encode(self.url)
         c.encode(self.content)
         c.encode(self.contentIndex)
@@ -212,6 +218,10 @@ extension ChanController {
 
 // MARK: actions
 extension ChanController {
+    func requestCurrent() {
+        self.contentRequest()
+    }
+    
     func requestNext() {
         self.contentIndex += 1
         self.contentRequest()
@@ -225,12 +235,7 @@ extension ChanController {
 
 // MARK: webview
 extension ChanController: UIWebViewDelegate {
-    // hopefully block popups
     func webView(_ webView: UIWebView, shouldStartLoadWith request: URLRequest, navigationType: UIWebViewNavigationType) -> Bool {
-        if navigationType != .linkClicked && navigationType != .backForward {
-            return false
-        }
-
         return true
     }
 

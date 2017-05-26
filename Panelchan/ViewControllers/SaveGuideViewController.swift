@@ -41,18 +41,20 @@ class SaveGuideViewController: UIViewController, UIWebViewDelegate, UIGestureRec
     var chanController: ChanController?
     var nextSelector: ChanController.Selector?
     var prevSelector: ChanController.Selector?
+}
 
+// MARK: views
+extension SaveGuideViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
         self.webView.addDelegate(self)
+        self.webView.scrollView.contentInset = UIEdgeInsetsMake(72, 0, 128, 0)
     }
+}
 
-    // MARK: stages
-    func enteredStage(_ stage: Stage) {
-        self.infoPanelController.enteredStage(stage)
-    }
-
+// MARK: stages
+extension SaveGuideViewController {
     func holdNextSelectorStage(_ point: CGPoint) throws {
         let el = try self.webView.pch_element(at: point).tryUnwrap()
         self.nextSelector = ChanController.Selector(el)
@@ -67,8 +69,7 @@ class SaveGuideViewController: UIViewController, UIWebViewDelegate, UIGestureRec
         if (sender.state == .began) {
             let rawPoint = sender.location(ofTouch: 0, in: self.webView)
             let f = self.view.window!.frame.size.width / self.webView.frame.size.width
-            let point = CGPoint(x: rawPoint.x * f, y: (rawPoint.y) * f)
-            // TODO: FIXME
+            let point = CGPoint(x: rawPoint.x * f, y: (rawPoint.y - self.webView.scrollView.contentInset.top) * f)
 
             do {
                 switch (self.stage) {
@@ -81,7 +82,6 @@ class SaveGuideViewController: UIViewController, UIWebViewDelegate, UIGestureRec
 
                     self.stage = .finished(controller: ChanController(
                         webView: self.webView,
-                        url: self.webView.request!.url!,
                         previous: self.prevSelector!,
                         next: self.nextSelector!))
                 default:
@@ -92,8 +92,22 @@ class SaveGuideViewController: UIViewController, UIWebViewDelegate, UIGestureRec
             }
         }
     }
+}
 
-    // MARK: delegation & simple actions
+// MARK: delegation & actions
+extension SaveGuideViewController {
+    func enteredStage(_ stage: Stage) {
+        self.infoPanelController.enteredStage(stage)
+    }
+
+    @IBAction func resetAction(_ sender: Any) {
+        self.chanController = nil
+        self.stage = .nextSelector
+    }
+
+    @IBAction func saveAction(_ sender: Any) {
+    }
+
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == Segues.infoPanel.rawValue {
             self.infoPanelController = segue.destination as! SaveGuideInfoPanelViewController

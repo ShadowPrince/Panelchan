@@ -19,6 +19,10 @@ var __pch = {
         return 1
     },
 
+    count_sel: function (sel) {
+        return this._prepare_result([Zepto(sel).length])
+    },
+
     click_selector: function (sel) {
         if (Zepto(sel).length > 0) {
             Zepto(sel).click()
@@ -55,6 +59,7 @@ var __pch = {
     },
 }
 
+/*
 Zepto(document).on('ready', function () {
     setTimeout(function () {
         window.open("pch://ready")
@@ -66,3 +71,4 @@ Zepto(document).on('ready', function () {
         }, 1000)
     })
 })
+*/

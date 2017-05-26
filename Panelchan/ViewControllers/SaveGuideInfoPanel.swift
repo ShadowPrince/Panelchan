@@ -21,20 +21,51 @@ class SaveGuideInfoPanelViewController: UIViewController, ChanControllerDelegate
     @IBOutlet weak var imgView: UIImageView!
     @IBOutlet weak var prevButton: UIButton!
     @IBOutlet weak var nextButton: UIButton!
-    @IBOutlet weak var guideText: UITextView!
+    @IBOutlet weak var guideText: UILabel!
+    @IBOutlet weak var guideProgress: UILabel!
+    @IBOutlet weak var nameField: UITextField!
+    @IBOutlet weak var domainLabel: UILabel!
+    @IBOutlet weak var saveButton: UIButton!
+
+    override func viewDidLoad() {
+        self.guideText.text = "Loading ..."
+        self.guideProgress.text = ""
+        self.nameField.text = "----"
+        self.domainLabel.text = "----"
+
+        self.saveButton.isEnabled = false
+        self.controls(locked: true)
+    }
+
+    func controls(locked l: Bool) {
+        self.nextButton.isEnabled = !l
+        self.prevButton.isEnabled = !l
+    }
 
     func enteredStage(_ stage: SaveGuideViewController.Stage) {
+        // talking about one liners
+        let progressText = { (0 ..< $0).reduce("") { acc, _ in acc.appending("✓")} }
+
         switch stage {
         case .initial:
             self.guideText.text = "Loading page..."
+            self.guideProgress.text = progressText(0)
         case .nextSelector:
-            self.guideText.text = "Step 1/2: Press and hold on button which opens new page (or new set/chapter)"
+            self.guideText.text = "Step 1/3: Press and hold button which opens new page"
+            self.guideProgress.text = progressText(1)
         case .previousSelector:
-            self.guideText.text = "Step 2/2: Press and hold on button which opens previous page (or, again, previous set/chapter)"
+            self.guideText.text = "Step 2/3: Press and hold button which opens previous page"
+            self.guideProgress.text = progressText(2)
         case .finished(let controller):
-            self.guideText.text = "Setup finished. You can test the settings using the buttons to the right"
+            self.guideText.text = "Step 2/3: Review name & settings"
+            self.guideProgress.text = progressText(3)
+            
             self.chanController = controller
             self.chanController?.delegate = self
+            self.chanController?.requestCurrent()
+            
+            self.nameField.text = self.chanController?.title
+            self.domainLabel.text = self.chanController?.url.host
         }
     }
 
@@ -53,25 +84,43 @@ class SaveGuideInfoPanelViewController: UIViewController, ChanControllerDelegate
 
         super.prepare(for: segue, sender: sender)
     }
-    
+}
+
+// MARK: actions
+extension SaveGuideInfoPanelViewController: UITextFieldDelegate {
     @IBAction func prevPageAction(_ sender: Any) {
         self.chanController?.requestPrev()
+        self.controls(locked: true)
     }
 
     @IBAction func nextPageAction(_ sender: Any) {
         self.chanController?.requestNext()
+        self.controls(locked: true)
     }
 
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        self.chanController?.title = textField.text!
+
+        return true
+    }
+}
+
+// MARK: chan ctrl
+extension SaveGuideInfoPanelViewController {
     func chanController(_ controller: ChanController, gotImage url: String) {
         print("got image \(url)")
         ImageProxyCache.sharedProxy.waitForImageData(for: url) { (data) in
             if let data = data {
                 self.imgView.image = UIImage(data: data)
             }
+
+            self.controls(locked: false)
         }
     }
 
     func chanController(_ controller: ChanController, didFailWith error: Error) {
         print(error)
+
+        self.controls(locked: false)
     }
 }
