@@ -56,9 +56,9 @@ extension SaveGuideCustomSelectorViewController {
 
         switch self.direction! {
         case .next:
-            self.selectorField.text = self.chanController?.nextSelector.custom
+            self.selectorField.text = self.chanController?.series.next.custom
         case .prev:
-            self.selectorField.text = self.chanController?.previousSelector.custom
+            self.selectorField.text = self.chanController?.series.previous.custom
         }
     }
 }
@@ -73,9 +73,9 @@ extension SaveGuideCustomSelectorViewController: UITextFieldDelegate {
         case .apply:
             switch self.direction! {
             case .next:
-                self.chanController?.nextSelector = ChanController.Selector(custom: self.selectorField.text!)
+                self.chanController?.series.next = Series.Selector(custom: self.selectorField.text!)
             case .prev:
-                self.chanController?.previousSelector = ChanController.Selector(custom: self.selectorField.text!)
+                self.chanController?.series.previous = Series.Selector(custom: self.selectorField.text!)
             }
         }
     }

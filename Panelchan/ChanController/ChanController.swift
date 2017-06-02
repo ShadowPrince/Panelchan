@@ -10,84 +10,35 @@ import Foundation
 import UIKit
 import Dispatch
 
-class ChanController: NSObject, NSCoding {
+class ChanController: NSObject {
+    static let MinSize = 700
+    
     enum Errors: Error {
         case failedToInvoke
         case failedToProcess
     }
 
-    struct Selector {
-        let tag, id, klass, custom: String
-
-        init(tag: String, id: String, klass: String) {
-            self.tag = tag
-            self.id = id
-            self.klass = klass
-            self.custom = ""
-        }
-
-        init(custom selector: String) {
-            self.tag = ""
-            self.id = ""
-            self.klass = ""
-            self.custom = selector
-        }
-
-        init(_ dict: EmbedElement) {
-            self.tag = dict["tag"]!
-            self.id = dict["id"]!
-            self.klass = dict["class"]!
-            self.custom = ""
-        }
-    }
-
     fileprivate var webView: UIWebView!
-    weak var delegate: ChanControllerDelegate?
 
+    fileprivate var settingUp = false
     fileprivate var content = [EmbedImage]()
     fileprivate var contentIndex = 0
 
-    var title: String
-    var url: URL
-    var previousSelector, nextSelector: Selector
+    weak var delegate: ChanControllerDelegate?
+    var series: Series
 
-    init(webView: UIWebView, previous: Selector, next: Selector) {
-        self.title = webView.pch_title()
-        self.url = webView.request!.url!
-        self.previousSelector = previous
-        self.nextSelector = next
+    init(webView: UIWebView, series: Series) {
         self.webView = webView
+        self.series = series
 
         super.init()
-
         self.webView.addDelegate(self)
-    }
-
-    required init?(coder c: NSCoder) {
-        // hooray type system!
-        self.title = c.decode()
-        self.url = c.decode()
-        self.content = c.decode()
-        self.contentIndex = c.decode()
-        self.nextSelector = c.decode()
-        self.previousSelector = c.decode()
-
-        super.init()
-    }
-
-    func encode(with c: NSCoder) {
-        c.encode(self.title)
-        c.encode(self.url)
-        c.encode(self.content)
-        c.encode(self.contentIndex)
-        c.encode(self.nextSelector)
-        c.encode(self.previousSelector)
     }
 }
 
 // MARK: fetch
 extension ChanController {
-    fileprivate func fetchInvocation(of selector: Selector) {
+    fileprivate func fetchInvocation(of selector: Series.Selector) {
         func classListSelector(_ list: String, drop const_drop: Int) -> String {
             var drop = const_drop
 
@@ -158,6 +109,7 @@ extension ChanController {
 
     fileprivate func fetchProcess() {
         DispatchQueue.global(qos: .userInitiated).async {
+            print("fetch")
             let until = CFAbsoluteTimeGetCurrent() + 10.0
             var run = true
             var timeout = false
@@ -165,7 +117,11 @@ extension ChanController {
             
             repeat {
                 DispatchQueue.main.sync {
-                    let newContent = self.webView.pch_images(bigger: 700)
+                    if !self.webView.pch_is_injected() {
+                        return
+                    }
+
+                    let newContent = self.webView.pch_images(bigger: ChanController.MinSize)
                     if newContent.count > 0 && currentContent != newContent {
                         currentContent = newContent
                         run = false
@@ -190,12 +146,19 @@ extension ChanController {
             }
         }
     }
+
+    fileprivate func updateSeries() {
+        self.series.thumbnail = self.content.first
+        self.series.updated = Date()
+        self.series.url = webView.request!.url!
+
+        Store.shared.store()
+    }
 }
 
 // MARK: content controller
-
 protocol ChanControllerDelegate: class {
-    func chanController(_ controller: ChanController, gotImage url: String)
+    func chanController(_ controller: ChanController, gotImage url: URL)
     func chanController(_ controller: ChanController, didFailWith error: Error)
 }
 
@@ -209,7 +172,7 @@ extension ChanController {
 
     fileprivate func contentRequest() {
         if self.content.count <= self.contentIndex || self.contentIndex < 0 {
-            self.fetchInvocation(of: self.contentIndex < 0 ? self.previousSelector : self.nextSelector)
+            self.fetchInvocation(of: self.contentIndex < 0 ? self.series.previous : self.series.next)
         } else {
             self.delegate?.chanController(self, gotImage: self.content[self.contentIndex])
         }
@@ -218,10 +181,15 @@ extension ChanController {
 
 // MARK: actions
 extension ChanController {
-    func requestCurrent() {
-        self.contentRequest()
+    func setupWebView() {
+        self.settingUp = true
+        self.webView.loadRequest(url: self.series.url)
     }
     
+    func requestCurrent() {
+        self.fetchProcess()
+    }
+
     func requestNext() {
         self.contentIndex += 1
         self.contentRequest()
@@ -240,6 +208,11 @@ extension ChanController: UIWebViewDelegate {
     }
 
     func webViewDidFinishLoad(_ webView: UIWebView) {
-        self.url = webView.request!.url!
+        self.webView.pch_inject()
+
+        if self.settingUp {
+            self.requestCurrent()
+            self.settingUp = false
+        }
     }
 }

@@ -16,9 +16,13 @@ extension UIWebView {
     func embedJavascript(_ name: String) {
         let _ = try? self.stringByEvaluatingJavaScript(from: String(contentsOf: Bundle.main.url(forResource: name, withExtension: "js")!))
     }
-
+    
     func loadRequest(string url: String) {
         self.loadRequest(URLRequest(url: URL(string: url)!))
+    }
+    
+    func loadRequest(url: URL) {
+        self.loadRequest(URLRequest(url: url))
     }
 }
 

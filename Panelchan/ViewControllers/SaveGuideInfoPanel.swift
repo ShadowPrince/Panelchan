@@ -28,7 +28,7 @@ class SaveGuideInfoPanelViewController: UIViewController, ChanControllerDelegate
     @IBOutlet weak var saveButton: UIButton!
 
     override func viewDidLoad() {
-        self.guideText.text = "Loading ..."
+        self.guideText.text = "Waiting ..."
         self.guideProgress.text = ""
         self.nameField.text = "----"
         self.domainLabel.text = "----"
@@ -40,6 +40,7 @@ class SaveGuideInfoPanelViewController: UIViewController, ChanControllerDelegate
     func controls(locked l: Bool) {
         self.nextButton.isEnabled = !l
         self.prevButton.isEnabled = !l
+        self.saveButton.isEnabled = !l
     }
 
     func enteredStage(_ stage: SaveGuideViewController.Stage) {
@@ -48,7 +49,7 @@ class SaveGuideInfoPanelViewController: UIViewController, ChanControllerDelegate
 
         switch stage {
         case .initial:
-            self.guideText.text = "Loading page..."
+            self.guideText.text = "Loading page ..."
             self.guideProgress.text = progressText(0)
         case .nextSelector:
             self.guideText.text = "Step 1/3: Press and hold button which opens new page"
@@ -64,8 +65,10 @@ class SaveGuideInfoPanelViewController: UIViewController, ChanControllerDelegate
             self.chanController?.delegate = self
             self.chanController?.requestCurrent()
             
-            self.nameField.text = self.chanController?.title
-            self.domainLabel.text = self.chanController?.url.host
+            self.nameField.text = self.chanController?.series.title
+            self.domainLabel.text = self.chanController?.series.url.host
+
+            self.controls(locked: false)
         }
     }
 
@@ -99,7 +102,7 @@ extension SaveGuideInfoPanelViewController: UITextFieldDelegate {
     }
 
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        self.chanController?.title = textField.text!
+        self.chanController?.series.title = textField.text!
 
         return true
     }
@@ -107,11 +110,18 @@ extension SaveGuideInfoPanelViewController: UITextFieldDelegate {
 
 // MARK: chan ctrl
 extension SaveGuideInfoPanelViewController {
-    func chanController(_ controller: ChanController, gotImage url: String) {
+    func chanController(_ controller: ChanController, gotImage url: URL) {
         print("got image \(url)")
         ImageProxyCache.sharedProxy.waitForImageData(for: url) { (data) in
             if let data = data {
                 self.imgView.image = UIImage(data: data)
+            } else {
+                print("Falling back to direct load")
+                do {
+                    self.imgView.image = UIImage(data: try Data(contentsOf: url))
+                } catch (let e) {
+                    print("Failed to load: \(e)")
+                }
             }
 
             self.controls(locked: false)

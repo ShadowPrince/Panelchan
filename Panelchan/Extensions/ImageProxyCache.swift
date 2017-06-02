@@ -15,11 +15,11 @@ class ImageProxyCache: URLCache {
     fileprivate let baseUrl = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).last!
     fileprivate let queue = OperationQueue()
 
-    func cachedImageData(for url: String) -> Data? {
+    func cachedImageData(for url: URL) -> Data? {
         return try? Data(contentsOf: self.url(for: url))
     }
 
-    func waitForImageData(for url: String, callback: @escaping ((Data?) -> Void)) {
+    func waitForImageData(for url: URL, callback: @escaping ((Data?) -> Void)) {
         if let data = self.cachedImageData(for: url) {
             callback(data)
         } else {
@@ -58,21 +58,13 @@ class ImageProxyCache: URLCache {
     }
 
     func cacheImageData(from cached: CachedURLResponse) {
-        /*
-        print("CACHING IMAGE")
-        print(cached.response.url)
-        print(cached.data.count)
-        print("@@@@@@@@@@@")
-         */
-        if let url = cached.response.url?.absoluteString {
-            try! cached.data.write(to: self.url(for: url))
-        }
+        try! cached.data.write(to: self.url(for: cached.response.url!))
     }
 
-    fileprivate func url(for string: String) -> URL {
+    fileprivate func url(for url: URL) -> URL {
         let length = Int(CC_MD5_DIGEST_LENGTH)
 
-        let data = string.data(using: String.Encoding.utf8)!
+        let data = url.absoluteString.data(using: String.Encoding.utf8)!
         let hash = data.withUnsafeBytes { (bytes: UnsafePointer<Data>) -> [UInt8] in
             var hash: [UInt8] = [UInt8](repeating: 0, count: Int(CC_MD5_DIGEST_LENGTH))
             CC_MD5(bytes, CC_LONG(data.count), &hash)

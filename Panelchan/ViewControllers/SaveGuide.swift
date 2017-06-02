@@ -23,6 +23,7 @@ class SaveGuideViewController: UIViewController, UIWebViewDelegate, UIGestureRec
 
     @IBOutlet weak var urlField: UITextField!
     @IBOutlet weak var webView: UIWebView!
+    var infoPanelController: SaveGuideInfoPanelViewController!
 
     private var _stage = Stage.initial
     var stage: Stage {
@@ -35,12 +36,12 @@ class SaveGuideViewController: UIViewController, UIWebViewDelegate, UIGestureRec
             self._stage = newValue
         }
     }
-
-    var infoPanelController: SaveGuideInfoPanelViewController!
     
+    var nextSelector: Series.Selector?
+    var prevSelector: Series.Selector?
+
+    var series: Series?
     var chanController: ChanController?
-    var nextSelector: ChanController.Selector?
-    var prevSelector: ChanController.Selector?
 }
 
 // MARK: views
@@ -57,12 +58,12 @@ extension SaveGuideViewController {
 extension SaveGuideViewController {
     func holdNextSelectorStage(_ point: CGPoint) throws {
         let el = try self.webView.pch_element(at: point).tryUnwrap()
-        self.nextSelector = ChanController.Selector(el)
+        self.nextSelector = Series.Selector(el)
     }
 
     func holdPreviousSelectorStage(_ point: CGPoint) throws {
         let el = try self.webView.pch_element(at: point).tryUnwrap()
-        self.prevSelector = ChanController.Selector(el)
+        self.prevSelector = Series.Selector(el)
     }
 
     @IBAction func holdAction(_ sender: UIGestureRecognizer) {
@@ -80,10 +81,17 @@ extension SaveGuideViewController {
                 case .previousSelector:
                     try self.holdPreviousSelectorStage(point)
 
+
+
+                    self.series = Series(title: self.webView.pch_title(),
+                                         url: self.webView.request!.url!,
+                                         thumbnail: self.webView.pch_images(bigger: ChanController.MinSize).first,
+                                         previous: self.prevSelector!,
+                                         next: self.nextSelector!)
+
                     self.stage = .finished(controller: ChanController(
                         webView: self.webView,
-                        previous: self.prevSelector!,
-                        next: self.nextSelector!))
+                        series: self.series!))
                 default:
                     break
                 }
@@ -106,6 +114,8 @@ extension SaveGuideViewController {
     }
 
     @IBAction func saveAction(_ sender: Any) {
+        Store.shared.insert(self.series!)
+        self.dismiss(animated: true, completion: nil)
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -125,6 +135,10 @@ extension SaveGuideViewController {
     
     @IBAction func backAction(_ sender: Any) {
         self.webView.goBack()
+    }
+    
+    @IBAction func closeAction(_ sender: Any) {
+        self.dismiss(animated: true, completion: nil)
     }
     
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {

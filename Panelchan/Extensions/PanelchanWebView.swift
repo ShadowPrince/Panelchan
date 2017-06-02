@@ -13,15 +13,20 @@ import UIKit
 import WebKit
 
 typealias EmbedElement = Dictionary<String, String>
-typealias EmbedImage = String
+typealias EmbedImage = URL
 
 var PCHWebViewDelegateHandle: UInt8 = 1
 extension UIWebView {
     func pch_inject() {
-        if (self.stringByEvaluatingJavaScript(from: "__pch.is_injected()") != "1") {
+        if !self.pch_is_injected() {
             self.embedJavascript("zepto")
             self.embedJavascript("pch_embed")
+            print("injected")
         }
+    }
+
+    func pch_is_injected() -> Bool {
+        return self.stringByEvaluatingJavaScript(from: "__pch.is_injected()") == "1"
     }
 
     func pch_parse(_ string: String) -> Any? {
@@ -47,7 +52,7 @@ extension UIWebView {
     }
 
     func pch_images(bigger px: Int) -> [EmbedImage] {
-        return self.pch_eval(method: "images_bigger_than", arguments: "\(px)") as! [EmbedImage]
+        return (self.pch_eval(method: "images_bigger_than", arguments: "\(px)") as! [String]).map { URL(string: $0)! }
     }
 
     func pch_title() -> String {

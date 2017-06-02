@@ -55,17 +55,17 @@ open class ILTranslucentView: UIView {
         }
     }
 
-    @IBInspectable open var translucentStyle : UIBarStyle {
+    @IBInspectable open var translucentStyle : Bool {
         set {
             if self.toolbarBG != nil {
-                self.toolbarBG!.barStyle = newValue
+                self.toolbarBG!.barStyle = newValue ? .blackTranslucent : .default
             }
         }
         get {
             if self.toolbarBG != nil {
-                return self.toolbarBG!.barStyle
+                return self.toolbarBG!.barStyle == .blackTranslucent
             } else {
-                return UIBarStyle.default
+                return false
             }
         }
     }
