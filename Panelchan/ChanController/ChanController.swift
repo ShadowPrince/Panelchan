@@ -11,7 +11,7 @@ import UIKit
 import Dispatch
 
 class ChanController: NSObject {
-    static let MinSize = 500
+    static let MinSize = 400
     static let FetchTimeout = 10.0
     
     enum Errors: Error {
