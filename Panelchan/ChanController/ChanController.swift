@@ -11,11 +11,21 @@ import UIKit
 import Dispatch
 
 class ChanController: NSObject {
-    static let MinSize = 700
+    static let MinSize = 500
+    static let FetchTimeout = 10.0
     
     enum Errors: Error {
         case failedToInvoke
         case failedToProcess
+
+        var stringValue: String {
+            switch (self) {
+            case .failedToInvoke:
+                return "App failed to emulate button press"
+            case .failedToProcess:
+                return "App failed to find target image"
+            }
+        }
     }
 
     fileprivate var webView: UIWebView!
@@ -55,6 +65,8 @@ extension ChanController {
         enum IterStage {
             case custom
             case full
+            case title
+            case text
             case id
             case klass(drop: Int)
         }
@@ -64,15 +76,32 @@ extension ChanController {
 
         loop: repeat {
             var selectorString = ""
+            var textString = ""
             switch iter {
             case .custom:
                 selectorString = selector.custom
 
                 iter = .full
             case .full:
-                if selector.id != "" {
-                    selectorString = "#foo\(selector.id)\(classListSelector(selector.klass, drop: 0))"
+                textString = selector.text
+                selectorString = String(
+                    format: "%@%@%@%@",
+                    selector.tag,
+                    selector.id != "" ? "#\(selector.id)" : "",
+                    classListSelector(selector.klass, drop: 0),
+                    selector.title != "" ? "[title=\"\(selector.title)\"]" : ""
+                )
+
+                iter = .title
+            case .title:
+                if selector.title != "" {
+                    selectorString = "\(selector.tag)[text=\"\(selector.title)\"]"
                 }
+
+                iter = .text
+            case .text:
+                textString = selector.text
+                selectorString = "\(selector.tag)"
 
                 iter = .id
             case .id:
@@ -93,7 +122,7 @@ extension ChanController {
                 }
             }
 
-            if selectorString != "" && self.webView.pch_click(selector: selectorString) {
+            if selectorString != "" && self.webView.pch_click(selector: selectorString, text: textString) {
                 firedSuccessfully = true
                 break loop
             }
@@ -110,7 +139,7 @@ extension ChanController {
     fileprivate func fetchProcess() {
         DispatchQueue.global(qos: .userInitiated).async {
             print("fetch")
-            let until = CFAbsoluteTimeGetCurrent() + 10.0
+            let until = CFAbsoluteTimeGetCurrent() + ChanController.FetchTimeout
             var run = true
             var timeout = false
             var currentContent = self.content
@@ -140,6 +169,7 @@ extension ChanController {
             DispatchQueue.main.sync {
                 if !timeout {
                     self.contentReplace(currentContent)
+                    self.updateSeries()
                 } else {
                     self.delegate?.chanController(self, didFailWith: Errors.failedToProcess)
                 }
@@ -148,9 +178,18 @@ extension ChanController {
     }
 
     fileprivate func updateSeries() {
-        self.series.thumbnail = self.content.first
+        if Settings.shared.updateThumbnail {
+            if let thumb = self.content.first {
+                self.series.thumbnail = thumb
+            }
+        }
+
+        if Settings.shared.updateTitle {
+            self.series.title = self.webView.pch_title()
+        }
+
         self.series.updated = Date()
-        self.series.url = webView.request!.url!
+        self.series.url = self.webView.pch_location()
 
         Store.shared.store()
     }
@@ -159,7 +198,7 @@ extension ChanController {
 // MARK: content controller
 protocol ChanControllerDelegate: class {
     func chanController(_ controller: ChanController, gotImage url: URL)
-    func chanController(_ controller: ChanController, didFailWith error: Error)
+    func chanController(_ controller: ChanController, didFailWith error: ChanController.Errors)
 }
 
 extension ChanController {
@@ -204,7 +243,12 @@ extension ChanController {
 // MARK: webview
 extension ChanController: UIWebViewDelegate {
     func webView(_ webView: UIWebView, shouldStartLoadWith request: URLRequest, navigationType: UIWebViewNavigationType) -> Bool {
-        return true
+        // let's hope this helps with popups
+        if let url = webView.request?.url {
+            return url.host == request.url?.host
+        } else {
+            return true
+        }
     }
 
     func webViewDidFinishLoad(_ webView: UIWebView) {

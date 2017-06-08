@@ -40,3 +40,9 @@ extension NSCoder {
         return self.decodeObject() as! T
     }
 }
+
+extension UserDefaults {
+    func value<T>(at path: String) -> T? {
+        return self.value(forKeyPath: path) as! T?
+    }
+}

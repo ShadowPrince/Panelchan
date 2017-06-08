@@ -57,7 +57,7 @@ class SaveGuideInfoPanelViewController: UIViewController, ChanControllerDelegate
         case .previousSelector:
             self.guideText.text = "Step 2/3: Press and hold button which opens previous page"
             self.guideProgress.text = progressText(2)
-        case .finished(let controller):
+        case .finished(let controller), .editing(controller: let controller):
             self.guideText.text = "Step 2/3: Review name & settings"
             self.guideProgress.text = progressText(3)
             
@@ -104,6 +104,7 @@ extension SaveGuideInfoPanelViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         self.chanController?.series.title = textField.text!
 
+        textField.resignFirstResponder()
         return true
     }
 }
@@ -112,25 +113,19 @@ extension SaveGuideInfoPanelViewController: UITextFieldDelegate {
 extension SaveGuideInfoPanelViewController {
     func chanController(_ controller: ChanController, gotImage url: URL) {
         print("got image \(url)")
-        ImageProxyCache.sharedProxy.waitForImageData(for: url) { (data) in
-            if let data = data {
-                self.imgView.image = UIImage(data: data)
+        ImageResolver.shared.waitForImageData(for: url) { (image) in
+            if let image = image {
+                self.imgView.image = image
             } else {
-                print("Falling back to direct load")
-                do {
-                    self.imgView.image = UIImage(data: try Data(contentsOf: url))
-                } catch (let e) {
-                    print("Failed to load: \(e)")
-                }
+                self.present(UIAlertController(title: "Error", message: "Failed to load image", preferredStyle: .alert), animated: true, completion: nil)
             }
 
             self.controls(locked: false)
         }
     }
 
-    func chanController(_ controller: ChanController, didFailWith error: Error) {
-        print(error)
-
+    func chanController(_ controller: ChanController, didFailWith error: ChanController.Errors) {
+        self.present(UIAlertController.init(title: "Error", message: error.stringValue, preferredStyle: .alert), animated: true, completion: nil)
         self.controls(locked: false)
     }
 }

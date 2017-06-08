@@ -120,6 +120,23 @@ open class ILTranslucentView: UIView {
         }
     }
 
+    @IBInspectable open var borderLeft: Bool {
+        set {
+            if newValue {
+                _borders.left = 1.0
+
+                let bot = CALayer()
+                bot.backgroundColor = self.borderColor.cgColor
+                bot.frame = CGRect(x: 0, y: 0, width: 1, height: self.frame.height)
+                self.layer.addSublayer(bot)
+            }
+        }
+
+        get {
+            return _borders.left > 0.0
+        }
+    }
+
     @IBInspectable open var borderColor = UIColor.lightGray
 
     fileprivate var ilColorBG : UIColor?

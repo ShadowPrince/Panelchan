@@ -13,6 +13,7 @@ class SavedViewController: UIViewController {
     enum Segues: String {
         case saveGuide = "saveGuide"
         case reader = "reader"
+        case settings = "settings"
     }
 
     @IBOutlet weak var collectionView: UICollectionView!
@@ -22,13 +23,9 @@ class SavedViewController: UIViewController {
 extension SavedViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        self.collectionView.dataSource = Store.shared
-        self.collectionView.delegate = self
-        self.collectionView.reloadData()
     }
 
-    override func viewWillLayoutSubviews() {
+    override func viewDidLayoutSubviews() {
         super.viewWillLayoutSubviews()
         self.collectionView.reloadData()
     }
@@ -39,6 +36,20 @@ extension SavedViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == Segues.reader.rawValue {
             (segue.destination as! ReaderViewController).series = sender! as? Series
+        }
+
+        if segue.identifier == Segues.saveGuide.rawValue {
+            let controller = segue.destination as! SaveGuideViewController
+            controller.series = sender as? Series
+        }
+
+        if segue.identifier == Segues.settings.rawValue {
+            if let cell = self.collectionView.cellForItem(at: IndexPath(row: Store.shared.count, section: 0)) {
+                segue.destination.popoverPresentationController?.sourceRect = CGRect(x: cell.frame.origin.x + cell.frame.size.width / 2,
+                                                                                     y: cell.frame.origin.y + cell.frame.size.height * 0.75,
+                                                                                     width: 1,
+                                                                                     height: 1)
+            }
         }
 
         super.prepare(for: segue, sender: sender)
@@ -66,9 +77,12 @@ extension SavedViewController {
     func deleteSeriesAction(_ sender: IndexPath) {
         Store.shared.remove(at: sender.row)
         self.collectionView.deleteItems(at: [sender])
+        Store.shared.store()
     }
 
     func editSeriesAction(_ sender: IndexPath) {
+        let series = Store.shared.series[sender.row]
+        self.performSegue(withIdentifier: Segues.saveGuide.rawValue, sender: series)
     }
     
     @IBAction func saveGuideAction(_ sender: Any) {
@@ -93,7 +107,7 @@ extension SavedViewController: UICollectionViewDelegate, UICollectionViewDelegat
     }
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let size = floor((collectionView.frame.width - 10 * 4) / 3) - 5
+        let size = floor((collectionView.frame.width - 30 * 4) / 3) - 5
 
         return CGSize(width: size,
                       height: size)
@@ -101,42 +115,86 @@ extension SavedViewController: UICollectionViewDelegate, UICollectionViewDelegat
 }
 
 // MARK: collection view data source
-extension Store: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+extension SavedViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return self.count + 1
+        return Store.shared.count + 1
     }
 
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+    func prepareAdd(cell: UICollectionViewCell, for indexPath: IndexPath) {
+        enum Tags: Int {
+            case add = 1
+            case settings = 2
+        }
+
+        cell.viewWithTag(Tags.add.rawValue)?.layer.cornerRadius = 8
+        cell.viewWithTag(Tags.settings.rawValue)?.layer.cornerRadius = 8
+
+        cell._intrl_setupSmallShadow()
+    }
+
+    func prepareSeries(cell: UICollectionViewCell, for indexPath: IndexPath) {
         enum Tags: Int {
             case thumbnail = 1
             case title = 2
             case url = 3
+            case bar = 4
         }
-        
+
+        let series = Store.shared.series[indexPath.row]
+        let barView = cell.viewWithTag(Tags.bar.rawValue)
+
+        barView?.layer.masksToBounds = true
+        barView?.layer.cornerRadius = 8
+
+        cell._simple_nil(tag: Tags.thumbnail.rawValue)
+        cell._simple_register(for: indexPath)
+
+        ImageResolver.shared.waitForImageData(for: series.thumbnail, callback: { (image) in
+            if cell._simple_check(for: indexPath) {
+                cell._simple_set(image, tag: Tags.thumbnail.rawValue)
+            }
+        })
+
+        cell._simple_set(series.title, tag: Tags.title.rawValue)
+        cell._simple_set(series.url.absoluteString, tag: Tags.url.rawValue)
+
+        cell._intrl_setupSmallShadow()
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         var cell: UICollectionViewCell!
+
         if indexPath.row == Store.shared.count {
             cell = collectionView.dequeueReusableCell(withReuseIdentifier: "addCell", for: indexPath)
+            self.prepareAdd(cell: cell, for: indexPath)
         } else {
-            let series = self.series[indexPath.row]
-            cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath)
-
-            DispatchQueue.global(qos: .background).async {
-                guard let url = series.thumbnail else { return }
-                guard let data = ImageProxyCache.sharedProxy.cachedImageData(for: url) else { return }
-                guard let image = UIImage(data: data) else { return }
-
-                DispatchQueue.main.sync {
-                    (cell.viewWithTag(Tags.thumbnail.rawValue) as? UIImageView)?.image = image
-                }
-            }
-
-            (cell.viewWithTag(Tags.title.rawValue) as? UILabel)?.text = series.title
-            (cell.viewWithTag(Tags.url.rawValue) as? UILabel)?.text = series.url.absoluteString
+            cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
+            self.prepareSeries(cell: cell, for: indexPath)
         }
 
-        cell.layer.borderColor = UIColor.lightGray.cgColor
-        cell.layer.borderWidth = 1
-        cell.layer.cornerRadius = 5
         return cell
+    }
+}
+
+// MARK: helpers
+extension UIView {
+    func _intrl_setupShadow() {
+        self.layer.shadowColor = UIColor.black.cgColor
+        self.layer.masksToBounds = false
+        self.layer.shouldRasterize = true
+        self.layer.rasterizationScale = UIScreen.main.scale
+        self.layer.shadowOffset = CGSize(width: 0, height: 1)
+    }
+
+    func _intrl_setupMediumShadow() {
+        self._intrl_setupShadow()
+        self.layer.shadowRadius = 48
+        self.layer.shadowOpacity = 0.4
+    }
+
+    func _intrl_setupSmallShadow() {
+        self._intrl_setupShadow()
+        self.layer.shadowRadius = 14
+        self.layer.shadowOpacity = 0.5
     }
 }

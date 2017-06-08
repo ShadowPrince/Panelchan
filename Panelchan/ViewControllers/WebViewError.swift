@@ -19,7 +19,13 @@ class WebViewErrorViewController: UIViewController {
 extension WebViewErrorViewController {
     override func viewDidLoad() {
         self.containerView.addSubview(self.webView)
-        self.webView.frame = self.containerView.frame
+        self.webView.frame = self.containerView.bounds
+        super.viewDidLoad()
+    }
+
+    override func viewDidLayoutSubviews() {
+        self.webView.frame = self.containerView.bounds
+        super.viewDidLayoutSubviews()
     }
 }
 
