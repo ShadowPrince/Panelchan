@@ -137,7 +137,7 @@ extension SaveGuideViewController: UITextFieldDelegate, UIGestureRecognizerDeleg
     func webViewDidStartLoad(_ webView: UIWebView) {
         self.webViewActivityView.startAnimating()
     }
-    
+
     func webViewDidFinishLoad(_ webView: UIWebView) {
         self.webViewActivityView.stopAnimating()
         
@@ -180,7 +180,7 @@ extension SaveGuideViewController {
         if var string = self.urlField.text {
             if string.contains(".") && !string.contains(" ") && !string.hasPrefix("http") {
                 string = "http://".appending(string)
-            } else {
+            } else if !string.hasPrefix("http") {
                 string = "http://google.com/search?q=".appending(string.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")
             }
 
