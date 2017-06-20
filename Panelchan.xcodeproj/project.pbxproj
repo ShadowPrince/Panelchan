@@ -17,6 +17,7 @@
 		F3465D151EC22B9C0005D072 /* pch_embed.js in Resources */ = {isa = PBXBuildFile; fileRef = F3465D141EC22B9C0005D072 /* pch_embed.js */; };
 		F3465D191EC22C080005D072 /* WebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3465D181EC22C080005D072 /* WebView.swift */; };
 		F3465D1B1EC22CCA0005D072 /* zepto.js in Resources */ = {isa = PBXBuildFile; fileRef = F3465D1A1EC22CCA0005D072 /* zepto.js */; };
+		F357B0231EF9209F0016EBAF /* UserManual.swift in Sources */ = {isa = PBXBuildFile; fileRef = F357B0221EF9209F0016EBAF /* UserManual.swift */; };
 		F357BEE51EE5F55700886961 /* SimpleUICollectionViewCellBindable.swift in Sources */ = {isa = PBXBuildFile; fileRef = F357BEE41EE5F55700886961 /* SimpleUICollectionViewCellBindable.swift */; };
 		F357BEE71EE60CBD00886961 /* ios7-icon.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F357BEE61EE60CBD00886961 /* ios7-icon.ttf */; };
 		F357BEE91EE614AA00886961 /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = F357BEE81EE614AA00886961 /* Settings.swift */; };
@@ -48,6 +49,7 @@
 		F3465D141EC22B9C0005D072 /* pch_embed.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = pch_embed.js; path = JS/pch_embed.js; sourceTree = "<group>"; };
 		F3465D181EC22C080005D072 /* WebView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = WebView.swift; path = Extensions/WebView.swift; sourceTree = "<group>"; };
 		F3465D1A1EC22CCA0005D072 /* zepto.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = zepto.js; path = JS/zepto.js; sourceTree = "<group>"; };
+		F357B0221EF9209F0016EBAF /* UserManual.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = UserManual.swift; path = ViewControllers/UserManual.swift; sourceTree = "<group>"; };
 		F357BEE41EE5F55700886961 /* SimpleUICollectionViewCellBindable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SimpleUICollectionViewCellBindable.swift; path = Extensions/SimpleUICollectionViewCellBindable.swift; sourceTree = "<group>"; };
 		F357BEE61EE60CBD00886961 /* ios7-icon.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "ios7-icon.ttf"; path = "Assets/ios7-icon.ttf"; sourceTree = "<group>"; };
 		F357BEE81EE614AA00886961 /* Settings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Settings.swift; path = Persistency/Settings.swift; sourceTree = "<group>"; };
@@ -93,6 +95,7 @@
 				F32701D81ED9C32700B4F513 /* Reader.swift */,
 				F3A1B15F1EE1F83000DD38EB /* WebViewError.swift */,
 				F357BEEA1EE6167000886961 /* SettingsController.swift */,
+				F357B0221EF9209F0016EBAF /* UserManual.swift */,
 			);
 			name = ViewControllers;
 			sourceTree = "<group>";
@@ -294,6 +297,7 @@
 				F325EE661ED437660027E1BD /* Saved.swift in Sources */,
 				F3A1BB831ED8AF9300135477 /* SaveGuideCustomSelector.swift in Sources */,
 				F357BEE51EE5F55700886961 /* SimpleUICollectionViewCellBindable.swift in Sources */,
+				F357B0231EF9209F0016EBAF /* UserManual.swift in Sources */,
 				F32701DF1EDA088600B4F513 /* DynamicBlurView.swift in Sources */,
 				F3B23ACF1EE5A583001D1612 /* AnimationQueue.swift in Sources */,
 				F357BEE91EE614AA00886961 /* Settings.swift in Sources */,

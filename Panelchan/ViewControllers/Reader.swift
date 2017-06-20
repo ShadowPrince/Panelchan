@@ -25,6 +25,7 @@ class ReaderViewController: UIViewController {
     var blurAnimationRunning = false
 
     @IBOutlet var tapNextRecognizer: UITapGestureRecognizer!
+    @IBOutlet var tapBarRecognizer: UITapGestureRecognizer!
 
     @IBOutlet var barHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var barView: ILTranslucentView!
@@ -88,6 +89,9 @@ extension ReaderViewController {
         self.titleLabel.text = self.series?.title
         self.domainLabel.text = self.series?.url.host
 
+        self.tapBarRecognizer.numberOfTouchesRequired = Settings.shared.controlType == 1 ? 2 : 1
+        self.tapNextRecognizer.numberOfTouchesRequired = Settings.shared.controlType == 1 ? 1 : 2
+
         super.viewDidLoad()
     }
 
@@ -149,6 +153,8 @@ extension ReaderViewController {
                 self.barHeightConstraint.isActive = false
             }
         }
+
+        UIApplication.shared.isStatusBarHidden = !isActive
     }
 
     @IBAction func toggleLockAction(_ sender: UIButton) {

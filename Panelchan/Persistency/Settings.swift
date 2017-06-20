@@ -12,11 +12,15 @@ class Settings {
     fileprivate enum Paths: String {
         case updateTitle = "updateTitle"
         case updateThumbnail = "updateThumbnail"
+        case controlType = "controlType"
+        case userManualChecks = "userManualChecks"
         case databaseVersion = "databaseVersion"
     }
 
     fileprivate static let Defaults: [Paths: Any] = [Paths.updateTitle: false,
                                                      Paths.updateThumbnail: true,
+                                                     Paths.userManualChecks: [:],
+                                                     Paths.controlType: 1,
                                                      Paths.databaseVersion: Store.Version, ]
 
     static let shared = Settings()
@@ -40,6 +44,16 @@ extension Settings {
     var updateThumbnail: Bool {
         get { return self.get(.updateThumbnail) }
         set { self.set(.updateThumbnail, value: newValue) }
+    }
+
+    var controlType: Int {
+        get { return self.get(.controlType) }
+        set { self.set(.controlType, value: newValue) }
+    }
+
+    var userManualChecks: [String: Bool] {
+        get { return self.get(.userManualChecks) }
+        set { self.set(.userManualChecks, value: newValue) }
     }
 
     var databaseVersion: Int {

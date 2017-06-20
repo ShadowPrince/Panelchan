@@ -29,6 +29,11 @@ extension SavedViewController {
         super.viewWillLayoutSubviews()
         self.collectionView.reloadData()
     }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        UserManualViewController.showIfNeeded(at: self, of: .saved)
+    }
 }
 
 // MARK: actions
