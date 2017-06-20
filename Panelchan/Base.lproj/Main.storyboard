@@ -34,51 +34,51 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="e8i-85-NKH">
-                                <rect key="frame" x="235" y="37" width="51" height="31"/>
+                                <rect key="frame" x="235" y="69" width="51" height="31"/>
                             </switch>
                             <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ubq-Xc-x0b">
-                                <rect key="frame" x="235" y="76" width="51" height="31"/>
+                                <rect key="frame" x="235" y="108" width="51" height="31"/>
                             </switch>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Update thumbnail" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KJW-hV-4wc">
-                                <rect key="frame" x="16" y="42" width="137" height="21"/>
+                                <rect key="frame" x="16" y="74" width="137" height="21"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Update title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1IL-KZ-r8J">
-                                <rect key="frame" x="16" y="81" width="90" height="21"/>
+                                <rect key="frame" x="16" y="113" width="90" height="21"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Controls type:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PnV-wz-6Tr">
-                                <rect key="frame" x="16" y="159" width="108" height="21"/>
+                                <rect key="frame" x="16" y="191" width="108" height="21"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="If turned on app will update series info on every page roll" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xcK-wH-8em">
-                                <rect key="frame" x="87.5" y="115" width="196.5" height="36"/>
+                                <rect key="frame" x="87.5" y="147" width="196.5" height="36"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                 <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="xTs-rE-yf9">
-                                <rect key="frame" x="90" y="188" width="121" height="29"/>
+                                <rect key="frame" x="90" y="220" width="121" height="29"/>
                                 <segments>
                                     <segment title="First"/>
                                     <segment title="Second"/>
                                 </segments>
                             </segmentedControl>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="axs-aj-7RD">
-                                <rect key="frame" x="59" y="331" width="182" height="30"/>
+                                <rect key="frame" x="59" y="363" width="182" height="30"/>
                                 <state key="normal" title="Reset user manual popups"/>
                                 <connections>
                                     <action selector="resetUserManualPopupsAction:" destination="400-h9-apm" eventType="touchUpInside" id="BcJ-Ph-gqN"/>
                                 </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="5" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="iFk-c2-oVO">
-                                <rect key="frame" x="62.5" y="233" width="221.5" height="90"/>
+                                <rect key="frame" x="62.5" y="265" width="221.5" height="90"/>
                                 <string key="text">First:       1 finger tap - bar                2 finger tap - next page  Second: 1 finger tap - next page                2 finger tap - bar</string>
                                 <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                 <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
@@ -89,7 +89,7 @@
                         <constraints>
                             <constraint firstItem="KJW-hV-4wc" firstAttribute="centerY" secondItem="e8i-85-NKH" secondAttribute="centerY" id="0tZ-mi-YKy"/>
                             <constraint firstItem="PnV-wz-6Tr" firstAttribute="leading" secondItem="1IL-KZ-r8J" secondAttribute="leading" id="2Cn-NP-Xhx"/>
-                            <constraint firstItem="e8i-85-NKH" firstAttribute="top" secondItem="5gf-X2-8hT" secondAttribute="bottom" constant="8" id="8Fg-fS-JLa"/>
+                            <constraint firstItem="e8i-85-NKH" firstAttribute="top" secondItem="5gf-X2-8hT" secondAttribute="bottom" constant="40" id="8Fg-fS-JLa"/>
                             <constraint firstItem="ubq-Xc-x0b" firstAttribute="trailing" secondItem="e8i-85-NKH" secondAttribute="trailing" id="BTm-VB-Uk9"/>
                             <constraint firstItem="axs-aj-7RD" firstAttribute="top" secondItem="iFk-c2-oVO" secondAttribute="bottom" constant="8" id="KWi-Aw-qE7"/>
                             <constraint firstItem="1IL-KZ-r8J" firstAttribute="centerY" secondItem="ubq-Xc-x0b" secondAttribute="centerY" id="N06-Vc-MaJ"/>
@@ -156,7 +156,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="KvD-Ps-Gaq" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="519.7265625" y="-600.78125"/>
+            <point key="canvasLocation" x="945" y="-973"/>
         </scene>
         <!--Saved View Controller-->
         <scene sceneID="T2U-IU-2ji">

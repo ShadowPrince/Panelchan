@@ -64,6 +64,11 @@ extension SaveGuideViewController {
         }
     }
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        UserManualViewController.showIfNeeded(at: self, of: .saveGuide)
+    }
+
     func keyboardStateChanged(notification: NSNotification) {
         let info = notification.userInfo!
         let keyboardFrame = (info[UIKeyboardFrameEndUserInfoKey] as! NSValue).cgRectValue

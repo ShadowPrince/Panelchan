@@ -25,16 +25,18 @@ class AnimationQueue {
         if self.running {
             return
         }
-        
+
         if let animation = self.animations.first,
            let completion = self.completions.first {
             let _ = self.animations.removeFirst()
             let _ = self.completions.removeFirst()
 
+            print("started animation")
             self.running = true
             UIView.animate(withDuration: duration, animations: {
                 animation()
             }) { (_) in
+                print("done animation")
                 completion()
                 self.running = false
                 self.start(duration: duration)

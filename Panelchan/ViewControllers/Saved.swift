@@ -74,8 +74,12 @@ extension SavedViewController {
                 self.deleteSeriesAction(indexPath)
             }))
 
-            menu.popoverPresentationController?.sourceView = self.collectionView.cellForItem(at: indexPath)
-            self.present(menu, animated: true, completion: nil)
+            if let cell = self.collectionView.cellForItem(at: indexPath) {
+                menu.popoverPresentationController?.sourceView = cell
+                menu.popoverPresentationController?.sourceRect = CGRect(x: cell.frame.width / 2, y: cell.frame.height /  2, width: 0, height: 0)
+
+                self.present(menu, animated: true, completion: nil)
+            }
         }
     }
 

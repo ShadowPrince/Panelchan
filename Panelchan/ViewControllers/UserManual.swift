@@ -42,11 +42,12 @@ extension UserManualViewController: UIWebViewDelegate, UIScrollViewDelegate {
         self.webView.scrollView.delegate = self
         self.webView.delegate = self
 
-        self.webView.loadRequest(string: "https://raw.githubusercontent.com/ShadowPrince/Panelchan/master/.gitignore")
+        self.webView.loadRequest(string: "https://raw.githubusercontent.com/ShadowPrince/Panelchan/master/UserManual/\(self.userScreen.rawValue).html")
     }
 
     func webViewDidFinishLoad(_ webView: UIWebView) {
         self.canScroll = true
+        self.scrollViewDidScroll(webView.scrollView)
     }
 
     func scrollViewDidScroll(_ scrollView: UIScrollView) {

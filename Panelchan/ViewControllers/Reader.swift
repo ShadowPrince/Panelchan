@@ -94,21 +94,31 @@ extension ReaderViewController {
 
         super.viewDidLoad()
     }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        UserManualViewController.showIfNeeded(at: self, of: .reader)
+    }
 
     func controls(locked l: Bool) {
         self.prevButton.isEnabled = !l
         self.nextButton.isEnabled = !l
         self.tapNextRecognizer.isEnabled = !l
 
+        self.blurView.blurRadius = l ? 100 : 0
+        self.blurView.alpha = l ? 1 : 0
+
+        /*
         if l {
             self.blurView.alpha = 1
         }
 
-        self.blurView.animationQueue.queue(duration: 0.4, {
+        self.blurView.animationQueue.queue(duration: 1, {
             self.blurView.blurRadius = l ? 100 : 0
         }, {
             self.blurView.alpha = l ? 1 : 0
         })
+ */
     }
 }
 
