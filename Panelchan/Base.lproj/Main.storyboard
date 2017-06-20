@@ -147,7 +147,7 @@
                             <constraint firstAttribute="trailing" secondItem="pVd-AB-V3r" secondAttribute="trailing" id="yBF-YH-UK5"/>
                         </constraints>
                     </view>
-                    <value key="contentSizeForViewInPopover" type="size" width="300" height="400"/>
+                    <value key="contentSizeForViewInPopover" type="size" width="450" height="500"/>
                     <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
                     <size key="freeformSize" width="450" height="500"/>
                     <connections>
