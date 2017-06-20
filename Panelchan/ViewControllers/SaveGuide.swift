@@ -200,11 +200,11 @@ extension SaveGuideViewController {
     }
     
     @IBAction func closeAction(_ sender: Any) {
+        let that = self
         let alert = UIAlertController(title: "Are you sure?", message: nil, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "Close", style: .destructive, handler: { (_) in
-            alert.dismiss(animated: true, completion: {
-                self.dismiss(animated: true, completion: nil)
-            })
+            that.dismiss(animated: true, completion: nil)
+            alert.dismiss(animated: true, completion: nil)
         }))
 
         alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: { (_) in

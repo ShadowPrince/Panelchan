@@ -15,6 +15,8 @@ class UserManualViewController: UIViewController {
         case reader = "reader"
     }
 
+    static let baseUrl = "https://shadowprince.github.io/Panelchan/%@.html"
+
     static let identifier = "userManual"
     static func showIfNeeded(at ctrl: UIViewController, of screen: UserScreen) {
         if Settings.shared.userManualChecks[screen.rawValue] != true {
@@ -42,7 +44,7 @@ extension UserManualViewController: UIWebViewDelegate, UIScrollViewDelegate {
         self.webView.scrollView.delegate = self
         self.webView.delegate = self
 
-        self.webView.loadRequest(string: "https://raw.githubusercontent.com/ShadowPrince/Panelchan/master/UserManual/\(self.userScreen.rawValue).html")
+        self.webView.loadRequest(string: String(format: UserManualViewController.baseUrl, self.userScreen.rawValue))
     }
 
     func webViewDidFinishLoad(_ webView: UIWebView) {
